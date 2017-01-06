@@ -18,11 +18,12 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'idea'
 
 jar {
-	baseName = 'demo'
+	baseName = 'readingList'
 	version = '0.0.1-SNAPSHOT'
 }
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 repositories {
 	jcenter()

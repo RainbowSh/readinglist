@@ -23,7 +23,7 @@ public class ReadingListController {
         this.readingListRepository = readingListRepository;
     }
 
-    @RequestMapping(value = "/{reader}", method = RequestMethod.GET)
+    @RequestMapping(value = "/readingList/{reader}", method = RequestMethod.GET)
     public String readerBooks(@PathVariable("reader") String reader, Model model) {
 
         List<Book> readingList = readingListRepository.findByReader(reader);
@@ -34,11 +34,11 @@ public class ReadingListController {
         return "readingList";
     }
 
-    @RequestMapping(value = "/{reader}", method = RequestMethod.POST)
+    @RequestMapping(value = "/readingList/{reader}", method = RequestMethod.POST)
     public String addToReadingList(@PathVariable("reader") String reader, Book book) {
         book.setReader(reader);
         readingListRepository.save(book);
 
-        return "redirect:/{reader}";
+        return "redirect:/readingList/{reader}";
     }
 }
