@@ -13,7 +13,7 @@ import java.util.List;
  * Created by Rainbow on 2017/1/5.
  */
 @Controller
-@RequestMapping("/")
+@RequestMapping("/readingList")
 public class ReadingListController {
 
     private ReadingListRepository readingListRepository;
@@ -23,7 +23,7 @@ public class ReadingListController {
         this.readingListRepository = readingListRepository;
     }
 
-    @RequestMapping(value = "/readingList/{reader}", method = RequestMethod.GET)
+    @RequestMapping(value = "/{reader}", method = RequestMethod.GET)
     public String readerBooks(@PathVariable("reader") String reader, Model model) {
 
         List<Book> readingList = readingListRepository.findByReader(reader);
@@ -34,11 +34,11 @@ public class ReadingListController {
         return "readingList";
     }
 
-    @RequestMapping(value = "/readingList/{reader}", method = RequestMethod.POST)
+    @RequestMapping(value = "/{reader}", method = RequestMethod.POST)
     public String addToReadingList(@PathVariable("reader") String reader, Book book) {
         book.setReader(reader);
         readingListRepository.save(book);
 
-        return "redirect:/readingList/{reader}";
+        return "redirect:/readingList /{reader}";
     }
 }
