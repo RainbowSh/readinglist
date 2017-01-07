@@ -1,5 +1,7 @@
-package com.example;
+package com.example.controller;
 
+import com.example.service.ReadingListRepository;
+import com.example.model.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,7 +15,7 @@ import java.util.List;
  * Created by Rainbow on 2017/1/5.
  */
 @Controller
-@RequestMapping("/readingList")
+@RequestMapping("/")
 public class ReadingListController {
 
     private ReadingListRepository readingListRepository;
@@ -39,6 +41,6 @@ public class ReadingListController {
         book.setReader(reader);
         readingListRepository.save(book);
 
-        return "redirect:/readingList /{reader}";
+        return "redirect:/{reader}";
     }
 }
