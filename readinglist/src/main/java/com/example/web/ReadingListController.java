@@ -1,7 +1,7 @@
-package com.example.controller;
+package com.example.web;
 
-import com.example.service.ReadingListRepository;
-import com.example.model.Book;
+import com.example.domain.BookRepository;
+import com.example.domain.Book;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,17 +18,17 @@ import java.util.List;
 @RequestMapping("/")
 public class ReadingListController {
 
-    private ReadingListRepository readingListRepository;
+    private BookRepository bookRepository;
 
     @Autowired
-    public ReadingListController(ReadingListRepository readingListRepository) {
-        this.readingListRepository = readingListRepository;
+    public ReadingListController(BookRepository bookRepository) {
+        this.bookRepository = bookRepository;
     }
 
     @RequestMapping(value = "/{reader}", method = RequestMethod.GET)
     public String readerBooks(@PathVariable("reader") String reader, Model model) {
 
-        List<Book> readingList = readingListRepository.findByReader(reader);
+        List<Book> readingList = bookRepository.findByReader(reader);
         if (readingList != null) {
             model.addAttribute("books", readingList);
         }
@@ -39,7 +39,7 @@ public class ReadingListController {
     @RequestMapping(value = "/{reader}", method = RequestMethod.POST)
     public String addToReadingList(@PathVariable("reader") String reader, Book book) {
         book.setReader(reader);
-        readingListRepository.save(book);
+        bookRepository.save(book);
 
         return "redirect:/{reader}";
     }
