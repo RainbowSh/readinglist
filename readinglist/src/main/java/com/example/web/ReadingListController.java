@@ -22,6 +22,7 @@ public class ReadingListController {
 
     @Autowired
     public ReadingListController(BookRepository bookRepository) {
+
         this.bookRepository = bookRepository;
     }
 

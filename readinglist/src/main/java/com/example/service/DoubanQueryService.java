@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by Rainbow on 2017/1/9.
  */
-public class DoubanQueryService implements IBookQueryService {
+public class DoubanQueryService implements BookQueryService {
     private DoubanProperties doubanProperties;
 
     @Autowired

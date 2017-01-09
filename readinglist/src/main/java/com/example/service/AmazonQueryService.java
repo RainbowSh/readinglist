@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * Created by Rainbow on 2017/1/9.
  */
-public class AmazonQueryService implements IBookQueryService {
+public class AmazonQueryService implements BookQueryService {
     private AmazonProperties amazonProperties;
 
     @Autowired
