@@ -3,7 +3,6 @@ package com.example;
 import com.example.domain.Book;
 import com.example.domain.BookRepository;
 import com.example.web.ReadingListController;
-import org.apache.commons.collections.ListUtils;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,9 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+
+import java.util.ArrayList;
+import java.util.Collections;
 
 import static org.hamcrest.Matchers.*;
 import static org.mockito.BDDMockito.given;
@@ -34,8 +36,8 @@ public class ReadingListControllerTest {
 
     @Test
     public void testHomePage() throws Exception {
-        given(this.bookRepository.findByReader("aoyi"))
-                .willReturn(ListUtils.EMPTY_LIST);
+        given(bookRepository.findByReader("aoyi"))
+                .willReturn(Collections.emptyList());
 
         this.mvc.perform(get("/aoyi"))
                 .andExpect(status().isOk())
@@ -63,6 +65,11 @@ public class ReadingListControllerTest {
         expectedBook.setAuthor("Book Author");
         expectedBook.setIsbn("1234567890");
         expectedBook.setDescription("Description");
+
+        given(bookRepository.findByReader("aoyi"))
+                .willReturn(new ArrayList<Book>() {{
+                    add(expectedBook);
+                }});
 
        this.mvc.perform(get("/aoyi"))
                 .andExpect(status().isOk())

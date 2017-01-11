@@ -16,12 +16,12 @@ public class BookShelfController {
 
     @RequestMapping(value = "/{isbn}", method = RequestMethod.GET)
     public Book queryByISBN(@PathVariable("isbn") String isbn) {
-        Book book = new Book();
 
         if (!ISBNValidator.getInstance().isValid(isbn)){
 //            throw new InvalidFormatException();
         }
 
+        Book book = new Book();
         book.setAuthor("aoyi");
         book.setReader("aoyi");
         book.setTitle("Old man and sea");
