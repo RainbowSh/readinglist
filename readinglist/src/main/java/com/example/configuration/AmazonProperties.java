@@ -1,12 +1,12 @@
 package com.example.configuration;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
 
 /**
  * Created by Rainbow on 2017/1/9.
  */
-@Configuration
+@Component
 @ConfigurationProperties(prefix = "amazon")
 public class AmazonProperties {
     private String url;
