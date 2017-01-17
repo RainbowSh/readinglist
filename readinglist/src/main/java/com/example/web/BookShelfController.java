@@ -1,7 +1,6 @@
-package com.example.controller;
+package com.example.web;
 
-import com.example.model.Book;
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.example.domain.Book;
 import org.apache.commons.validator.routines.ISBNValidator;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,12 +16,15 @@ public class BookShelfController {
 
     @RequestMapping(value = "/{isbn}", method = RequestMethod.GET)
     public Book queryByISBN(@PathVariable("isbn") String isbn) {
-        Book book = new Book();
 
         if (!ISBNValidator.getInstance().isValid(isbn)){
 //            throw new InvalidFormatException();
         }
 
+        String validisbn = ISBNValidator.getInstance().validate(isbn);
+
+
+        Book book = new Book();
         book.setAuthor("aoyi");
         book.setReader("aoyi");
         book.setTitle("Old man and sea");
