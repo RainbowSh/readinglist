@@ -1,10 +1,14 @@
 package com.example.service;
 
-import com.example.domain.douban.Book;
+import com.example.configuration.DoubanProperties;
+import com.example.domain.douban.DoubanBook;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
@@ -19,8 +23,12 @@ import static org.junit.Assert.assertThat;
  * Created by rainbow on 2017/1/19.
  */
 @RunWith(SpringRunner.class)
+@EnableConfigurationProperties(DoubanProperties.class)
+@TestPropertySource("classpath:resource.properties")
 public class DoubanServiceTests {
-    private final static String DOUBAN_API_URL = "https://api.douban.com/v2/book/isbn/{isbn}";
+    @Autowired
+    private DoubanProperties doubanProperties;
+//    private final static String DOUBAN_API_URL = "https://api.douban.com/v2/book/isbn/{isbn}";
 
     @Test
     public void testQueryBookInfo() throws Exception {
@@ -28,7 +36,7 @@ public class DoubanServiceTests {
         Map<String, String> params = new HashMap<>();
         params.put("isbn", "9787505715660");
 
-        ResponseEntity<String> response = restTemplate.getForEntity(DOUBAN_API_URL, String.class, params);
+        ResponseEntity<String> response = restTemplate.getForEntity(doubanProperties.getUrl(), String.class, params);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
 
@@ -40,13 +48,13 @@ public class DoubanServiceTests {
         Map<String, String> params = new HashMap<>();
         params.put("isbn", "9787505715660");
 
-        Book book = restTemplate.getForObject(DOUBAN_API_URL, Book.class, params);
+        DoubanBook doubanBook = restTemplate.getForObject(doubanProperties.getUrl(), DoubanBook.class, params);
 
-        assertThat(book, notNullValue());
-        assertThat(book.getAuthor(), notNullValue());
-        assertThat(book.getAuthor().size(), equalTo(1));
-        assertThat(book.getAuthor().get(0), equalTo("（法）圣埃克苏佩里"));
-        assertThat(book.getTitle(), equalTo("小王子"));
+        assertThat(doubanBook, notNullValue());
+        assertThat(doubanBook.getAuthor(), notNullValue());
+        assertThat(doubanBook.getAuthor().size(), equalTo(1));
+        assertThat(doubanBook.getAuthor().get(0), equalTo("（法）圣埃克苏佩里"));
+        assertThat(doubanBook.getTitle(), equalTo("小王子"));
 
     }
 }

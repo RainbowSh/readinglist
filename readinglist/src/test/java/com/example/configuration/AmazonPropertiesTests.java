@@ -7,7 +7,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -15,7 +15,7 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(SpringRunner.class)
 @EnableConfigurationProperties(AmazonProperties.class)
-@TestPropertySource("classpath:application.properties")
+@TestPropertySource("classpath:resource.properties")
 public class AmazonPropertiesTests {
     @Autowired
     private AmazonProperties amazonProperties;
@@ -23,5 +23,15 @@ public class AmazonPropertiesTests {
     @Test
     public void readProperties() throws Exception {
         assertThat(amazonProperties.getAssociateTag(), equalTo("BookShelf"));
+
+        assertThat(amazonProperties.getAccessKeyId(), notNullValue());
+        assertThat(amazonProperties.getAccessKeyId().length(), equalTo(20));
+        assertThat(amazonProperties.getAccessKeyId(), startsWith("AK"));
+        assertThat(amazonProperties.getAccessKeyId(), endsWith("GA"));
+
+        assertThat(amazonProperties.getSecretAccessKey(), notNullValue());
+        assertThat(amazonProperties.getSecretAccessKey().length(), equalTo(40));
+        assertThat(amazonProperties.getSecretAccessKey(), startsWith("DE"));
+        assertThat(amazonProperties.getSecretAccessKey(), endsWith("MG"));
     }
 }

@@ -51,8 +51,8 @@ public class ReadingListControllerTest {
 
         this.mvc.perform(post("/aoyi")
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
-                .param("title", "Book Title")
-                .param("author", "Book Author")
+                .param("title", "DoubanBook Title")
+                .param("author", "DoubanBook Author")
                 .param("isbn", "1234567890")
                 .param("description", "Description"))
                 .andExpect(status().is3xxRedirection())
@@ -61,8 +61,8 @@ public class ReadingListControllerTest {
         Book expectedBook = new Book();
         expectedBook.setId(1L);
         expectedBook.setReader("aoyi");
-        expectedBook.setTitle("Book Title");
-        expectedBook.setAuthor("Book Author");
+        expectedBook.setTitle("DoubanBook Title");
+        expectedBook.setAuthor("DoubanBook Author");
         expectedBook.setIsbn("1234567890");
         expectedBook.setDescription("Description");
 

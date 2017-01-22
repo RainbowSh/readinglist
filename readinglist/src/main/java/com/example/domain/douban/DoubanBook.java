@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by rainbow on 2017/1/19.
  */
-public class Book {
+public class DoubanBook {
 
     private String id;
 

@@ -12,11 +12,13 @@ public class AmazonQueryService implements BookQueryService {
 
     @Autowired
     public AmazonQueryService(AmazonProperties amazonProperties){
+
         this.amazonProperties = amazonProperties;
     }
 
     @Override
     public Book queryByISBN(String isbn) {
+
         return null;
     }
 }
