@@ -28,7 +28,6 @@ import static org.junit.Assert.assertThat;
 public class DoubanServiceTests {
     @Autowired
     private DoubanProperties doubanProperties;
-//    private final static String DOUBAN_API_URL = "https://api.douban.com/v2/book/isbn/{isbn}";
 
     @Test
     public void testQueryBookInfo() throws Exception {
@@ -39,7 +38,6 @@ public class DoubanServiceTests {
         ResponseEntity<String> response = restTemplate.getForEntity(doubanProperties.getUrl(), String.class, params);
 
         assertThat(response.getStatusCode(), equalTo(HttpStatus.OK));
-
     }
 
     @Test
@@ -55,6 +53,5 @@ public class DoubanServiceTests {
         assertThat(doubanBook.getAuthor().size(), equalTo(1));
         assertThat(doubanBook.getAuthor().get(0), equalTo("（法）圣埃克苏佩里"));
         assertThat(doubanBook.getTitle(), equalTo("小王子"));
-
     }
 }

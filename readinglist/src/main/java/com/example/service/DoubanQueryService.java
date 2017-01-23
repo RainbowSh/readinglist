@@ -5,6 +5,7 @@ import com.example.domain.Book;
 import com.example.domain.BookConverter;
 import com.example.domain.douban.DoubanBook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.HashMap;
@@ -13,15 +14,20 @@ import java.util.Map;
 /**
  * Created by Rainbow on 2017/1/9.
  */
+@Service
 public class DoubanQueryService implements BookQueryService {
 
-    private final DoubanProperties doubanProperties;
+    @Autowired
+    private DoubanProperties doubanProperties;
 
     @Autowired
-    public DoubanQueryService(DoubanProperties doubanProperties) {
+    private RestTemplate restTemplate;
 
-        this.doubanProperties = doubanProperties;
-    }
+//    @Autowired
+//    public DoubanQueryService(DoubanProperties doubanProperties) {
+//
+//        this.doubanProperties = doubanProperties;
+//    }
 
     @Override
     public Book queryByISBN(String isbn) {
@@ -33,8 +39,7 @@ public class DoubanQueryService implements BookQueryService {
 
     private DoubanBook query(String isbn) {
 
-        RestTemplate restTemplate = new RestTemplate();
-
+//        RestTemplate restTemplate = new RestTemplate();
         Map<String, String> params = new HashMap<>();
         params.put("isbn", isbn);
 

@@ -38,5 +38,7 @@ public class AmazonQueryService implements BookQueryService {
         Document doc = client.getXml(queryString);
 
         System.out.println(documentToString(doc));
+
+        return null;
     }
 }
