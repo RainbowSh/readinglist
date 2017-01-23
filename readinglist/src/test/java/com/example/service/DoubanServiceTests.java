@@ -41,7 +41,7 @@ public class DoubanServiceTests {
     }
 
     @Test
-    public void testErrorISBN() throws Exception {
+    public void testQueryByISBN() throws Exception {
         RestTemplate restTemplate = new RestTemplate();
         Map<String, String> params = new HashMap<>();
         params.put("isbn", "9787505715660");

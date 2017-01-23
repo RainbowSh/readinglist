@@ -9,12 +9,12 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
@@ -103,13 +103,13 @@ public class DoubanQueryServiceTests {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void shouldThrowRuntimeExceptionWhenNotFoundBook() throws Exception {
+    public void shouldThrowHttpClientExceptionWhenNotFoundBook() throws Exception {
         expectedException.expect(RestClientException.class);
         expectedException.expectMessage("404 Not Found");
 
         mockServer.expect(requestTo("https://api.douban.com/v2/book/isbn/978750571566"))
                 .andExpect(method(HttpMethod.GET))
-                .andRespond(withNoContent());
+                .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
         doubanQueryService.queryByISBN("978750571566");
 
@@ -124,7 +124,7 @@ public class DoubanQueryServiceTests {
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withServerError());
 
-        expectedException.expect(RuntimeException.class);
+        expectedException.expect(RestClientException.class);
         expectedException.expectMessage("500 Internal Server Error");
 
         doubanQueryService.queryByISBN("978750571566");

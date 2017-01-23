@@ -23,12 +23,6 @@ public class DoubanQueryService implements BookQueryService {
     @Autowired
     private RestTemplate restTemplate;
 
-//    @Autowired
-//    public DoubanQueryService(DoubanProperties doubanProperties) {
-//
-//        this.doubanProperties = doubanProperties;
-//    }
-
     @Override
     public Book queryByISBN(String isbn) {
 
@@ -39,7 +33,6 @@ public class DoubanQueryService implements BookQueryService {
 
     private DoubanBook query(String isbn) {
 
-//        RestTemplate restTemplate = new RestTemplate();
         Map<String, String> params = new HashMap<>();
         params.put("isbn", isbn);
 

@@ -5,12 +5,14 @@ import com.example.domain.Book;
 import com.example.service.amazon.AmazonClient;
 import org.dom4j.Document;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import static com.example.service.amazon.AmazonClient.documentToString;
 
 /**
  * Created by Rainbow on 2017/1/9.
  */
+@Service
 public class AmazonQueryService implements BookQueryService {
 
     private final static String QUERY_STR = "Service=AWSECommerceService&" +
@@ -20,13 +22,8 @@ public class AmazonQueryService implements BookQueryService {
             "IdType=ISBN&" +
             "ItemId=";
 
-    private AmazonProperties amazonProperties;
-
     @Autowired
-    public AmazonQueryService(AmazonProperties amazonProperties){
-
-        this.amazonProperties = amazonProperties;
-    }
+    private AmazonProperties amazonProperties;
 
     @Override
     public Book queryByISBN(String isbn) {
