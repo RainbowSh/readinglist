@@ -42,6 +42,10 @@ repositories {
 
 
 dependencies {
+	compile('de.malkusch.amazon.product-advertising-api:amazon-ecs-api:1.1.2')
+	compile('commons-io:commons-io:2.5')
+	compile('commons-httpclient:commons-httpclient:3.1')
+	compile('commons-codec:commons-codec:1.9')
 	compile('commons-validator:commons-validator:1.5.1')
 	compile('org.springframework.boot:spring-boot-starter-data-jpa')
 	compile('org.springframework.boot:spring-boot-starter-thymeleaf')
