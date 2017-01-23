@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by Rainbow on 2017/1/5.
@@ -15,9 +16,14 @@ public class Book {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String reader;
+    @NotNull
     private String isbn;
+    @NotNull
     private String title;
+    @NotNull
     private String author;
+    private String publisher;
+    private String imageUrl;
     private String description;
 
     public void setId(Long id) {
@@ -66,5 +72,21 @@ public class Book {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getPublisher() {
+        return publisher;
+    }
+
+    public void setPublisher(String publisher) {
+        this.publisher = publisher;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

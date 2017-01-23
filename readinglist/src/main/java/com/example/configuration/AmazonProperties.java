@@ -9,7 +9,7 @@ import javax.validation.constraints.NotNull;
  * Created by Rainbow on 2017/1/9.
  */
 @Component
-@ConfigurationProperties(prefix = "amazon")
+@ConfigurationProperties(locations = "classpath:resource.properties", prefix = "amazon")
 public class AmazonProperties {
     @NotNull
     private String associateTag;

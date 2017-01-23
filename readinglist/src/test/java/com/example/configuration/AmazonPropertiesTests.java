@@ -4,30 +4,34 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by Rainbow on 2017/1/17.
+ * Created by rainbow on 2017/1/17.
  */
-@RunWith(SpringJUnit4ClassRunner.class)
+@RunWith(SpringRunner.class)
 @EnableConfigurationProperties(AmazonProperties.class)
-@TestPropertySource("classpath:application.properties")
-@ComponentScan("com.example.properties")
+@TestPropertySource("classpath:resource.properties")
 public class AmazonPropertiesTests {
-
     @Autowired
     private AmazonProperties amazonProperties;
 
     @Test
-    public void name() throws Exception {
+    public void readProperties() throws Exception {
         assertThat(amazonProperties.getAssociateTag(), equalTo("BookShelf"));
-        assertThat(amazonProperties.getSecretAccessKey(), notNullValue());
+
         assertThat(amazonProperties.getAccessKeyId(), notNullValue());
+        assertThat(amazonProperties.getAccessKeyId().length(), equalTo(20));
+        assertThat(amazonProperties.getAccessKeyId(), startsWith("AK"));
+        assertThat(amazonProperties.getAccessKeyId(), endsWith("GA"));
+
+        assertThat(amazonProperties.getSecretAccessKey(), notNullValue());
+        assertThat(amazonProperties.getSecretAccessKey().length(), equalTo(40));
+        assertThat(amazonProperties.getSecretAccessKey(), startsWith("DE"));
+        assertThat(amazonProperties.getSecretAccessKey(), endsWith("MG"));
     }
 }

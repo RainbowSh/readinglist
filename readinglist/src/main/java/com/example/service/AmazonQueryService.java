@@ -24,12 +24,12 @@ public class AmazonQueryService implements BookQueryService {
 
     @Autowired
     public AmazonQueryService(AmazonProperties amazonProperties){
+
         this.amazonProperties = amazonProperties;
     }
 
     @Override
     public Book queryByISBN(String isbn) {
-
         AmazonClient client = new AmazonClient(this.amazonProperties.getAccessKeyId(), this.amazonProperties
                 .getSecretAccessKey(), this.amazonProperties.getAssociateTag());
 
@@ -38,6 +38,5 @@ public class AmazonQueryService implements BookQueryService {
         Document doc = client.getXml(queryString);
 
         System.out.println(documentToString(doc));
-        return null;
     }
 }

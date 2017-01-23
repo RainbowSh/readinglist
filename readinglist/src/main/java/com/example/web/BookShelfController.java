@@ -21,6 +21,9 @@ public class BookShelfController {
 //            throw new InvalidFormatException();
         }
 
+        String validisbn = ISBNValidator.getInstance().validate(isbn);
+
+
         Book book = new Book();
         book.setAuthor("aoyi");
         book.setReader("aoyi");
