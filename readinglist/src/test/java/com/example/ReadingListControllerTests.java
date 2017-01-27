@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @RunWith(SpringRunner.class)
 @WebMvcTest(ReadingListController.class)
-public class ReadingListControllerTest {
+public class ReadingListControllerTests {
 
     @Autowired
     private MockMvc mvc;

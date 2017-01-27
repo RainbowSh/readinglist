@@ -7,8 +7,8 @@
 </head>
 <body>
     <h2>Your Reading List</h2>
-    <div th:unless="${#lists.isEmpty(books)}">
-        <dl th:each="doubanBook : ${books}">
+    <div th:unless="${#lists.isEmpty(data)}">
+        <dl th:each="doubanBook : ${data}">
             <dt class="bookHeadline">
                 <span th:text="${doubanBook.title}">Title</span> by
                 <span th:text="${doubanBook.author}">Author</span>
@@ -20,8 +20,8 @@
             </dd>
         </dl>
     </div>
-    <div th:if="${#lists.isEmpty(books)}">
-        <p>You have no books in your doubanBook list.</p>
+    <div th:if="${#lists.isEmpty(data)}">
+        <p>You have no data in your doubanBook list.</p>
     </div>
 
     <hr/>
