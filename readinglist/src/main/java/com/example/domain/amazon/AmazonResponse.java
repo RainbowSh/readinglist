@@ -6,7 +6,7 @@ import org.simpleframework.xml.Root;
 /**
  * Created by Rainbow on 2017/1/27.
  */
-@Root
+@Root(name = "ItemLookupResponse")
 public class AmazonResponse {
 
     @Element(name = "Items")

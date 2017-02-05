@@ -10,7 +10,7 @@ import org.simpleframework.xml.Text;
 @Root
 public class Size {
 
-    @Attribute
+    @Attribute(name = "Units")
     private String units;
 
     @Text
