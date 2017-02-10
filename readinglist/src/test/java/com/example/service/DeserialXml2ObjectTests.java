@@ -202,7 +202,10 @@ public class DeserialXml2ObjectTests {
     private final static String RESPONSE_WITH_ERRORS_XML = "<ItemLookupResponse>\n" +
             "    <Items>\n" +
             "        <Request>\n" +
-            "            <IsValid>True</IsValid>\n" +
+            "            <IsValid>True</IsValid>\n\n" +
+            "            <ItemLookupRequest>\n" +
+            "                <ItemId>9787513537100</ItemId>\n" +
+            "            </ItemLookupRequest>" +
             "            <Errors>\n" +
             "                <Error>\n" +
             "                    <Code>AWS.InvalidParameterValue</Code>\n" +
@@ -258,6 +261,7 @@ public class DeserialXml2ObjectTests {
         assertThat(bookList.getData().getRequest().getErrors(), notNullValue());
         assertThat(bookList.getData().getRequest().getErrors().size(), equalTo(1));
         assertThat(bookList.getData().getRequest().getErrors().get(0).getCode(), equalTo("AWS.InvalidParameterValue"));
+        assertThat(bookList.getData().getRequest().getItemId(), equalTo("9787513537100"));
 
     }
 
@@ -299,5 +303,20 @@ public class DeserialXml2ObjectTests {
         String actual = "<URL>https://www.amazon.cn/gp/pdp/taf/B01ARKEV1G?SubscriptionId=AKIAIOXSEN3ZLCWQABGA&tag=BookShelf&linkCode=xm2&camp=2025&creative=165953&creativeASIN=B01ARKEV1G</URL>".replaceAll("(\\w+=\\w+)(&)", "$1&amp;");
 
         assertThat(actual, equalTo(expect));
+    }
+
+    @Test
+    public void testDeserializeFromXmlString() throws Exception {
+
+        String xml = "<?xml version=\"1.0\" ?><ItemLookupResponse xmlns=\"http://webservices.amazon.com/AWSECommerceService/2011-08-01\"><OperationRequest><HTTPHeaders><Header Name=\"UserAgent\" Value=\"Java/1.8.0_112\"></Header></HTTPHeaders><RequestId>a14dc09c-f53e-4542-837f-1ff69eb10cd6</RequestId><Arguments><Argument Name=\"AWSAccessKeyId\" Value=\"AKIAIOXSEN3ZLCWQABGA\"></Argument><Argument Name=\"AssociateTag\" Value=\"BookShelf\"></Argument><Argument Name=\"IdType\" Value=\"ISBN\"></Argument><Argument Name=\"ItemId\" Value=\"9787302423287\"></Argument><Argument Name=\"Operation\" Value=\"ItemLookup\"></Argument><Argument Name=\"ResponseGroup\" Value=\"Images,ItemAttributes\"></Argument><Argument Name=\"SearchIndex\" Value=\"Books\"></Argument><Argument Name=\"Service\" Value=\"AWSECommerceService\"></Argument><Argument Name=\"Timestamp\" Value=\"2017-02-06T13:01:22Z\"></Argument><Argument Name=\"Signature\" Value=\"9uhDZyavTbJQe3msh6YyyRUkaHr8kVo+hy9wulfiySU=\"></Argument></Arguments><RequestProcessingTime>0.0751446510000000</RequestProcessingTime></OperationRequest><Items><Request><IsValid>True</IsValid><ItemLookupRequest><ReviewPage>1</ReviewPage><DeliveryMethod>Ship</DeliveryMethod><ReviewSort>-SubmissionDate</ReviewSort><IdType>ISBN</IdType><ItemId>9787302423287</ItemId><ResponseGroup>Images</ResponseGroup><ResponseGroup>ItemAttributes</ResponseGroup><SearchIndex>Books</SearchIndex><VariationPage>All</VariationPage></ItemLookupRequest></Request><Item><ASIN>B01ARKEV1G</ASIN><DetailPageURL>https://www.amazon.cn/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-%E5%91%A8%E5%BF%97%E5%8D%8E/dp/B01ARKEV1G?SubscriptionId=AKIAIOXSEN3ZLCWQABGA&amp;tag=BookShelf&amp;linkCode=xm2&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B01ARKEV1G</DetailPageURL><ItemLinks><ItemLink><Description>Add To Wishlist</Description><URL>https://www.amazon.cn/gp/registry/wishlist/add-item.html?asin.0=B01ARKEV1G&amp;SubscriptionId=AKIAIOXSEN3ZLCWQABGA&amp;tag=BookShelf&amp;linkCode=xm2&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B01ARKEV1G</URL></ItemLink><ItemLink><Description>Tell A Friend</Description><URL>https://www.amazon.cn/gp/pdp/taf/B01ARKEV1G?SubscriptionId=AKIAIOXSEN3ZLCWQABGA&amp;tag=BookShelf&amp;linkCode=xm2&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B01ARKEV1G</URL></ItemLink><ItemLink><Description>All Customer Reviews</Description><URL>https://www.amazon.cn/review/product/B01ARKEV1G?SubscriptionId=AKIAIOXSEN3ZLCWQABGA&amp;tag=BookShelf&amp;linkCode=xm2&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B01ARKEV1G</URL></ItemLink><ItemLink><Description>All Offers</Description><URL>https://www.amazon.cn/gp/offer-listing/B01ARKEV1G?SubscriptionId=AKIAIOXSEN3ZLCWQABGA&amp;tag=BookShelf&amp;linkCode=xm2&amp;camp=2025&amp;creative=165953&amp;creativeASIN=B01ARKEV1G</URL></ItemLink></ItemLinks><SmallImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL75_.jpg</URL><Height Units=\"pixels\">75</Height><Width Units=\"pixels\">67</Width></SmallImage><MediumImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL160_.jpg</URL><Height Units=\"pixels\">160</Height><Width Units=\"pixels\">144</Width></MediumImage><LargeImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL.jpg</URL><Height Units=\"pixels\">500</Height><Width Units=\"pixels\">449</Width></LargeImage><ImageSets><ImageSet Category=\"primary\"><SwatchImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL30_.jpg</URL><Height Units=\"pixels\">30</Height><Width Units=\"pixels\">27</Width></SwatchImage><SmallImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL75_.jpg</URL><Height Units=\"pixels\">75</Height><Width Units=\"pixels\">67</Width></SmallImage><ThumbnailImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL75_.jpg</URL><Height Units=\"pixels\">75</Height><Width Units=\"pixels\">67</Width></ThumbnailImage><TinyImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL110_.jpg</URL><Height Units=\"pixels\">110</Height><Width Units=\"pixels\">99</Width></TinyImage><MediumImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL._SL160_.jpg</URL><Height Units=\"pixels\">160</Height><Width Units=\"pixels\">144</Width></MediumImage><LargeImage><URL>https://images-cn.ssl-images-amazon.com/images/I/410pXZz4kFL.jpg</URL><Height Units=\"pixels\">500</Height><Width Units=\"pixels\">449</Width></LargeImage></ImageSet></ImageSets><ItemAttributes><Author>周志华</Author><Binding>平装</Binding><Brand>清华大学出版社</Brand><Creator Role=\"作者\">周志华</Creator><EAN>9787302423287</EAN><Edition>第1版</Edition><Feature>机器学习 - 周志华</Feature><IsAdultProduct>0</IsAdultProduct><ISBN>7302423288</ISBN><Label>清华大学出版社</Label><Languages><Language><Name>chinese</Name><Type>published</Type></Language></Languages><ListPrice><Amount>8800</Amount><CurrencyCode>CNY</CurrencyCode><FormattedPrice>￥ 88.00</FormattedPrice></ListPrice><Manufacturer>清华大学出版社</Manufacturer><NumberOfPages>425</NumberOfPages><PackageDimensions><Height Units=\"inches\">0.94</Height><Length Units=\"inches\">9.21</Length><Weight Units=\"pounds\">2.07</Weight><Width Units=\"inches\">8.27</Width></PackageDimensions><ProductGroup>Book</ProductGroup><ProductTypeName>ABIS_BOOK</ProductTypeName><PublicationDate>2016-01-01</PublicationDate><Publisher>清华大学出版社</Publisher><ReleaseDate>2016-02-01</ReleaseDate><Studio>清华大学出版社</Studio><Title>机器学习</Title></ItemAttributes></Item></Items></ItemLookupResponse>";
+
+        AmazonResponse bookList = serializer.read(AmazonResponse.class, xml, false);
+
+        assertThat(bookList.getData().getRequest().isValid(), is(true));
+
+        assertThat(bookList.getData().getRequest().hasErrors(), is(false));
+
+        assertThat(bookList.getData().getBooks().size(), equalTo(1));
+
     }
 }

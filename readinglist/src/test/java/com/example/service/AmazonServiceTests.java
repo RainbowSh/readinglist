@@ -1,7 +1,7 @@
 package com.example.service;
 
 import com.example.configuration.AmazonProperties;
-import com.example.domain.amazon.AmazonBookList;
+import com.example.domain.amazon.AmazonResponse;
 import com.example.service.amazon.SignedRequestsHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Test;
@@ -18,8 +18,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -79,11 +78,13 @@ public class AmazonServiceTests {
 
         String response = template.getForObject(URI.create(serviceUrl), String.class);
         Serializer serializer = new Persister();
-        AmazonBookList bookList = serializer.read(AmazonBookList.class, response, false);
+        AmazonResponse bookList = serializer.read(AmazonResponse.class, response, false);
 
-        assertThat(bookList.getBooks(), notNullValue());
-        assertThat(bookList.getBooks().size(), equalTo(1));
-        assertThat(bookList.getBooks().get(0), notNullValue());
-//        assertThat(bookList.getErrors().get(1).getAttributes().getTitle(), equalTo("机器学习"));
+        assertThat(bookList, notNullValue());
+        assertThat(bookList.getData().getRequest().isValid(), is(true));
+        assertThat(bookList.getData().getRequest().hasErrors(), is(false));
+        assertThat(bookList.getData().getBooks().size(), equalTo(1));
+        assertThat(bookList.getData().getBooks().get(0), notNullValue());
+        assertThat(bookList.getData().getBooks().get(0).getAttributes().getTitle(), equalTo("机器学习"));
     }
 }

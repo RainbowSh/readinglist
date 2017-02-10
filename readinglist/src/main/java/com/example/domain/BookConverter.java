@@ -1,5 +1,6 @@
 package com.example.domain;
 
+import com.example.domain.amazon.AmazonBook;
 import com.example.domain.douban.DoubanBook;
 import org.dom4j.Document;
 import org.dom4j.Node;
@@ -23,20 +24,17 @@ public final class BookConverter {
         return book;
     }
 
-    public static Book from(Document doc) {
-
-        checkError(doc);
+    public static Book from(AmazonBook source) {
 
         Book book = new Book();
 
+        book.setIsbn(source.getAttributes().getIsbn());
+        book.setTitle(source.getAttributes().getTitle());
+        book.setAuthor(source.getAttributes().getAuthor());
+        book.setPublisher(source.getAttributes().getPublisher());
+        book.setImageUrl(source.getSmallImage().getUrl());
+        book.setDescription(source.getAttributes().getBinding());
 
         return book;
-    }
-
-    private static void checkError(Document doc) {
-        Node errorNode = doc.selectSingleNode("//Error");
-        if (errorNode != null) {
-
-        }
     }
 }
