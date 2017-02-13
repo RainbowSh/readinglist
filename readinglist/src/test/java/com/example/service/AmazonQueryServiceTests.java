@@ -6,6 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -18,6 +19,7 @@ import static org.junit.Assert.assertThat;
  * Created by Rainbow on 2017/1/16.
  */
 @RunWith(SpringRunner.class)
+@SpringBootTest
 @TestPropertySource("classpath:application.properties")
 @ContextConfiguration(classes = AmazonQueryServiceConfiguration.class)
 public class AmazonQueryServiceTests {
