@@ -11,6 +11,7 @@ import com.example.service.exception.*;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -25,10 +26,10 @@ import java.util.Map;
  */
 @Service
 public class AmazonQueryService implements BookQueryService {
-    /*
-     * Use the end-point according to the region you are interested in.
-     */
-    private static final String ENDPOINT = "webservices.amazon.cn";
+//    /*
+//     * Use the end-point according to the region you are interested in.
+//     */
+//    private static final String ENDPOINT = "webservices.amazon.cn";
 
     @Autowired
     private AmazonProperties amazonProperties;
@@ -36,16 +37,16 @@ public class AmazonQueryService implements BookQueryService {
     @Autowired
     private RestTemplate template;
 
+    @Autowired
     private SignedRequestsHelper helper;
-
-    {
-        try {
-            helper = SignedRequestsHelper.getInstance(ENDPOINT, amazonProperties.getAccessKeyId(), amazonProperties
-                    .getSecretAccessKey());
-        } catch (Exception e) {
-            throw new RuntimeException(e.getCause());
-        }
-    }
+//    {
+//        try {
+//            helper = SignedRequestsHelper.getInstance(ENDPOINT, amazonProperties.getAccessKeyId(), amazonProperties
+//                    .getSecretAccessKey());
+//        } catch (Exception e) {
+//            throw new RuntimeException("Initial SignedRequestHelper failed.", e.getCause());
+//        }
+//    }
 
     @Override
     public Book queryByISBN(String isbn) {
