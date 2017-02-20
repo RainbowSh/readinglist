@@ -65,7 +65,7 @@ public class AmazonQueryService implements BookQueryService {
             case OK:
                 return parseResponse(response.getBody());
             case FORBIDDEN:
-
+                throw new AccessForbitException();
             case UNAUTHORIZED:
                 throw new AccessUnauthorizedException();
             case INTERNAL_SERVER_ERROR:

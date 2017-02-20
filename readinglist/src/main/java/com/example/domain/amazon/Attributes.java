@@ -34,7 +34,18 @@ public class Attributes {
     private String publisher;
 
     @Element(name = "PublicationDate")
-    private String PublicationDate;
+    private String publicationDate;
+
+    @Element(name = "EAN")
+    private String ean;
+
+    public String getEan() {
+        return ean;
+    }
+
+    public void setEan(String ean) {
+        this.ean = ean;
+    }
 
     public String getTitle() {
         return title;
@@ -101,10 +112,10 @@ public class Attributes {
     }
 
     public String getPublicationDate() {
-        return PublicationDate;
+        return publicationDate;
     }
 
     public void setPublicationDate(String publicationDate) {
-        PublicationDate = publicationDate;
+        this.publicationDate = publicationDate;
     }
 }

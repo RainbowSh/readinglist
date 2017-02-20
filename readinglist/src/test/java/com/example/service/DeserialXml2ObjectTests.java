@@ -187,6 +187,7 @@ public class DeserialXml2ObjectTests {
             "            <ItemAttributes>\n" +
             "                <Author>周志华</Author>\n" +
             "                <Binding>平装</Binding>\n" +
+            "                <EAN>9787302423287</EAN>\n" +
             "                <Creator Role=\"作者\">周志华</Creator>\n" +
             "                <Edition>第1版</Edition>\n" +
             "                <ISBN>7302423288</ISBN>\n" +
@@ -249,6 +250,7 @@ public class DeserialXml2ObjectTests {
         assertThat(bookList.getData().getBooks().get(0).getAttributes().getTitle(), equalTo("机器学习"));
         assertThat(bookList.getData().getBooks().get(0).getAttributes().getAuthor(), equalTo("周志华"));
         assertThat(bookList.getData().getBooks().get(0).getAttributes().getPublicationDate(), equalTo("2016-01-01"));
+        assertThat(bookList.getData().getBooks().get(0).getAttributes().getEan(), equalTo("9787302423287"));
     }
 
     @Test

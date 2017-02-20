@@ -2,8 +2,7 @@ package com.example.domain;
 
 import com.example.domain.amazon.AmazonBook;
 import com.example.domain.douban.DoubanBook;
-import org.dom4j.Document;
-import org.dom4j.Node;
+import org.apache.commons.lang.StringUtils;
 
 /**
  * Created by rainbow on 2017/1/21.
@@ -28,7 +27,7 @@ public final class BookConverter {
 
         Book book = new Book();
 
-        book.setIsbn(source.getAttributes().getIsbn());
+        book.setIsbn(StringUtils.defaultIfEmpty(source.getAttributes().getEan(), source.getAttributes().getIsbn()));
         book.setTitle(source.getAttributes().getTitle());
         book.setAuthor(source.getAttributes().getAuthor());
         book.setPublisher(source.getAttributes().getPublisher());

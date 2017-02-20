@@ -1,12 +1,14 @@
 package com.example.service;
 
 import com.example.domain.Book;
+import com.example.service.exception.AccessForbitException;
+import com.example.service.exception.IsbnIllegalException;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
@@ -14,11 +16,13 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
+import java.nio.charset.Charset;
+
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static org.junit.Assert.assertThat;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 /**
@@ -210,9 +214,8 @@ public class AmazonQueryServiceTests {
 
     @Test
     public void testQueryByISBN() throws Exception {
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.ACCEPT_CHARSET, "utf-8");
-        mockServer.expect(queryParam("AWSAccessKeyId","AKIAIOXSEN3ZLCWQABGA"))
+
+        mockServer.expect(queryParam("AWSAccessKeyId","AKIAJURJTJZHIXNSWDIQ"))
                 .andExpect(queryParam("AssociateTag", "BookShelf"))
                 .andExpect(queryParam("IdType", "ISBN"))
                 .andExpect(queryParam("ItemId", "9787302423287"))
@@ -222,7 +225,7 @@ public class AmazonQueryServiceTests {
                 .andExpect(queryParam("Service", "AWSECommerceService"))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(COMPLEX_XML.replaceAll("(\\w+=\\w+)(&)", "$1&amp;"),
-                        MediaType.APPLICATION_XML).headers(headers));
+                        new MediaType(MediaType.APPLICATION_XML, Charset.forName("utf-8"))));
 
         Book expect = new Book();
         expect.setIsbn("9787302423287");
@@ -236,5 +239,26 @@ public class AmazonQueryServiceTests {
         mockServer.verify();
 
         assertThat(actual, sameBeanAs(expect).ignoring("description"));
+    }
+
+    @Test(expected = IsbnIllegalException.class)
+    public void shouldThrowNotFoundBookExceptionWhenQueryFoundNothing() throws Exception {
+        mockServer.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess(RESPONSE_WITH_ERRORS_XML.replaceAll("(\\w+=\\w+)(&)", "$1&amp;"),
+                        new MediaType(MediaType.APPLICATION_XML, Charset.forName("utf-8"))));
+
+        amazonQueryService.queryByISBN("9787302423287");
+
+        mockServer.verify();
+    }
+
+    @Test(expected = AccessForbitException.class)
+    public void shouldThrowAccessForbitExceptionWhenAWSReturnForbidden() throws Exception {
+        mockServer.expect(method(HttpMethod.GET))
+                .andRespond(withStatus(HttpStatus.FORBIDDEN));
+
+        amazonQueryService.queryByISBN("9787302423287");
+
+        mockServer.verify();
     }
 }
