@@ -5,4 +5,11 @@ package com.example.service.exception;
  */
 public final class AmazonServiceException extends RuntimeException {
 
+    public AmazonServiceException(String message) {
+        super(message);
+    }
+
+    public AmazonServiceException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

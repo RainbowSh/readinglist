@@ -1,6 +1,7 @@
 package com.example.service;
 
 import com.example.configuration.AmazonProperties;
+import com.example.service.amazon.AmazonResponseErrorHandler;
 import com.example.service.amazon.SignedRequestsHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -25,7 +26,10 @@ public class AmazonQueryServiceConfiguration {
 
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate template = new RestTemplate();
+        template.setErrorHandler(amazonResponseErrorHandler());
+
+        return template;
     }
 
     @Bean()
@@ -36,6 +40,11 @@ public class AmazonQueryServiceConfiguration {
         } catch (Exception e) {
             throw new RuntimeException("Initial SignedRequestHelper failed.", e.getCause());
         }
+    }
+
+    @Bean
+    public AmazonResponseErrorHandler amazonResponseErrorHandler() {
+        return new AmazonResponseErrorHandler();
     }
 
     @Bean

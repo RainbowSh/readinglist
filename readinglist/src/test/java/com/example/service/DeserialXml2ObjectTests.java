@@ -1,5 +1,6 @@
 package com.example.service;
 
+import com.example.domain.amazon.AmazonErrorResponse;
 import com.example.domain.amazon.AmazonResponse;
 import org.junit.Before;
 import org.junit.Test;
@@ -217,6 +218,16 @@ public class DeserialXml2ObjectTests {
             "    </Items>\n" +
             "</ItemLookupResponse>";
 
+    private final static String ERROR_RESPONSE_XML = "<?xml version=\"1.0\"?>\n" +
+            "<ItemLookupErrorResponse\n" +
+            "    xmlns=\"http://ecs.amazonaws.com/doc/2005-10-05/\">\n" +
+            "    <Error>\n" +
+            "        <Code>InvalidClientTokenId</Code>\n" +
+            "        <Message>The AWS Access Key Id you provided does not exist in our records.</Message>\n" +
+            "    </Error>\n" +
+            "    <RequestId>c23956a1-a55f-4b30-8acc-be803e0b5ab6</RequestId>\n" +
+            "</ItemLookupErrorResponse>";
+
     private Serializer serializer;
 
     @Before
@@ -320,5 +331,16 @@ public class DeserialXml2ObjectTests {
 
         assertThat(bookList.getData().getBooks().size(), equalTo(1));
 
+    }
+
+    @Test
+    public void testDeserializeFromErrorResponse() throws Exception {
+
+        AmazonErrorResponse error = serializer.read(AmazonErrorResponse.class, ERROR_RESPONSE_XML, false);
+
+        assertThat(error, notNullValue());
+        assertThat(error.getError(), notNullValue());
+        assertThat(error.getError().getCode(), equalTo("InvalidClientTokenId"));
+        assertThat(error.getError().getMessage(), equalTo("The AWS Access Key Id you provided does not exist in our records."));
     }
 }

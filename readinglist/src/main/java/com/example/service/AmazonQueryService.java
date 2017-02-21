@@ -4,14 +4,17 @@ import com.example.configuration.AmazonProperties;
 import com.example.domain.Book;
 import com.example.domain.BookConverter;
 import com.example.domain.amazon.AmazonBook;
+import com.example.domain.amazon.AmazonErrorResponse;
 import com.example.domain.amazon.AmazonResponse;
 import com.example.domain.amazon.Error;
 import com.example.service.amazon.SignedRequestsHelper;
-import com.example.service.exception.*;
+import com.example.service.exception.AmazonServiceException;
+import com.example.service.exception.BookNotFoundException;
+import com.example.service.exception.IsbnIllegalException;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -26,10 +29,6 @@ import java.util.Map;
  */
 @Service
 public class AmazonQueryService implements BookQueryService {
-//    /*
-//     * Use the end-point according to the region you are interested in.
-//     */
-//    private static final String ENDPOINT = "webservices.amazon.cn";
 
     @Autowired
     private AmazonProperties amazonProperties;
@@ -39,14 +38,6 @@ public class AmazonQueryService implements BookQueryService {
 
     @Autowired
     private SignedRequestsHelper helper;
-//    {
-//        try {
-//            helper = SignedRequestsHelper.getInstance(ENDPOINT, amazonProperties.getAccessKeyId(), amazonProperties
-//                    .getSecretAccessKey());
-//        } catch (Exception e) {
-//            throw new RuntimeException("Initial SignedRequestHelper failed.", e.getCause());
-//        }
-//    }
 
     @Override
     public Book queryByISBN(String isbn) {
@@ -60,21 +51,17 @@ public class AmazonQueryService implements BookQueryService {
         String serviceUrl = signUrl(isbn);
 
         ResponseEntity<String> response = template.getForEntity(URI.create(serviceUrl), String.class);
+        HttpStatus status = response.getStatusCode();
 
-        switch (response.getStatusCode()) {
-            case OK:
-                return parseResponse(response.getBody());
-            case FORBIDDEN:
-                throw new AccessForbitException();
-            case UNAUTHORIZED:
-                throw new AccessUnauthorizedException();
-            case INTERNAL_SERVER_ERROR:
-                throw new ServerInternalErrorException();
-            case SERVICE_UNAVAILABLE:
-                throw new AccessThrottledException();
-            default:
-                throw new AmazonServiceException();
+        if(RestUtils.isOk(status)) {
+            return parseResponse(response.getBody());
         }
+
+        if(RestUtils.isError(status)){
+            handleError(getAmazonResponse(response.getBody(), AmazonErrorResponse.class).getError());
+        }
+
+        throw new AmazonServiceException("Occurs some unknown error when access amazon web service.");
     }
 
     private String signUrl(String isbn) {
@@ -95,7 +82,7 @@ public class AmazonQueryService implements BookQueryService {
 
     private AmazonBook parseResponse(String xml) {
 
-        AmazonResponse response = getAmazonResponse(xml);
+        AmazonResponse response = getAmazonResponse(xml, AmazonResponse.class);
 
         if (response.getData().getRequest().hasErrors()) {
             handleErrors(response.getData().getRequest().getErrors());
@@ -108,18 +95,17 @@ public class AmazonQueryService implements BookQueryService {
         return response.getData().getBooks().get(0);
     }
 
-    private AmazonResponse getAmazonResponse(String xml) {
-
-        AmazonResponse response;
+    private <T> T getAmazonResponse(String xml, Class<T> type) {
+        T result;
 
         try {
             Serializer serializer = new Persister();
-            response = serializer.read(AmazonResponse.class, xml, false);
+            result = serializer.read(type, xml, false);
         } catch (Exception ex) {
-            throw new RuntimeException("Deserialize amazon service response error.", ex.getCause());
+            throw new AmazonServiceException("Deserialize amazon service response error.", ex.getCause());
         }
 
-        return response;
+        return result;
     }
 
     private void handleErrors(List<Error> errors) {
@@ -129,14 +115,11 @@ public class AmazonQueryService implements BookQueryService {
     }
 
     private void handleError(Error error) {
-        String errorCode = error.getCode();
-        String errorMsg = error.getMessage();
-
-        if (errorCode.equalsIgnoreCase("AWS.InvalidParameterValue")) {
-            throw new IsbnIllegalException(errorMsg);
+        if (error.isInvalidIsbn()) {
+            throw new IsbnIllegalException(error.toString());
         }
 
-        throw new RuntimeException(String.format("%s:%s", errorCode, errorMsg));
+        throw new AmazonServiceException(error.toString());
     }
 
 }

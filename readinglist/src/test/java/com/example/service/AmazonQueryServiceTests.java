@@ -1,10 +1,13 @@
 package com.example.service;
 
 import com.example.domain.Book;
-import com.example.service.exception.AccessForbitException;
+import com.example.service.exception.AmazonServiceException;
+import com.example.service.exception.BookNotFoundException;
 import com.example.service.exception.IsbnIllegalException;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
@@ -20,6 +23,7 @@ import java.nio.charset.Charset;
 
 import static com.shazam.shazamcrest.matcher.Matchers.sameBeanAs;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.queryParam;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
@@ -190,6 +194,47 @@ public class AmazonQueryServiceTests {
             "    </Items>\n" +
             "</ItemLookupResponse>";
 
+    private final static String NO_RESULT_XML = "<?xml version=\"1.0\"?>\n" +
+            "<ItemLookupResponse\n" +
+            "    xmlns=\"http://webservices.amazon.com/AWSECommerceService/2011-08-01\">\n" +
+            "    <OperationRequest>\n" +
+            "        <HTTPHeaders>\n" +
+            "            <Header Name=\"UserAgent\" Value=\"Mozilla/5.0 (Macintosh; Intel Mac OS X 10.12; rv:50.0) Gecko/20100101 Firefox/50.0\"></Header>\n" +
+            "        </HTTPHeaders>\n" +
+            "        <RequestId>8cc398a4-611d-411a-9931-19fb621d34c7</RequestId>\n" +
+            "        <Arguments>\n" +
+            "            <Argument Name=\"AWSAccessKeyId\" Value=\"AKIAIOXSEN3ZLCWQABGA\"></Argument>\n" +
+            "            <Argument Name=\"AssociateTag\" Value=\"BookShelf\"></Argument>\n" +
+            "            <Argument Name=\"IdType\" Value=\"ISBN\"></Argument>\n" +
+            "            <Argument Name=\"ItemId\" Value=\"9787302423287\"></Argument>\n" +
+            "            <Argument Name=\"Operation\" Value=\"ItemLookup\"></Argument>\n" +
+            "            <Argument Name=\"ResponseGroup\" Value=\"Images,ItemAttributes\"></Argument>\n" +
+            "            <Argument Name=\"SearchIndex\" Value=\"Books\"></Argument>\n" +
+            "            <Argument Name=\"Service\" Value=\"AWSECommerceService\"></Argument>\n" +
+            "            <Argument Name=\"Timestamp\" Value=\"2017-01-28T16:09:03.000Z\"></Argument>\n" +
+            "            <Argument Name=\"Signature\" Value=\"/T4LeC7WiFWpDp2M8S1WmWNfugRuYuyzgNpaIXCPW0w=\"></Argument>\n" +
+            "        </Arguments>\n" +
+            "        <RequestProcessingTime>0.0654821280000000</RequestProcessingTime>\n" +
+            "    </OperationRequest>\n" +
+            "    <Items>\n" +
+            "        <Request>\n" +
+            "            <IsValid>True</IsValid>\n" +
+            "            <ItemLookupRequest>\n" +
+            "                <ReviewPage>1</ReviewPage>\n" +
+            "                <DeliveryMethod>Ship</DeliveryMethod>\n" +
+            "                <ReviewSort>-SubmissionDate</ReviewSort>\n" +
+            "                <IdType>ISBN</IdType>\n" +
+            "                <ItemId>9787302423287</ItemId>\n" +
+            "                <ResponseGroup>Images</ResponseGroup>\n" +
+            "                <ResponseGroup>ItemAttributes</ResponseGroup>\n" +
+            "                <SearchIndex>Books</SearchIndex>\n" +
+            "                <VariationPage>All</VariationPage>\n" +
+            "            </ItemLookupRequest>\n" +
+            "        </Request>\n" +
+            "        <Item/>\n" +
+            "    </Items>\n" +
+            "</ItemLookupResponse>";
+
     private final static String RESPONSE_WITH_ERRORS_XML = "<ItemLookupResponse>\n" +
             "    <Items>\n" +
             "        <Request>\n" +
@@ -206,6 +251,16 @@ public class AmazonQueryServiceTests {
             "        </Request>\n" +
             "    </Items>\n" +
             "</ItemLookupResponse>";
+
+    private final static String FORBIDDEN_RESPONSE = "<?xml version=\"1.0\"?>\n" +
+            "<ItemLookupErrorResponse\n" +
+            "    xmlns=\"http://ecs.amazonaws.com/doc/2005-10-05/\">\n" +
+            "    <Error>\n" +
+            "        <Code>InvalidClientTokenId</Code>\n" +
+            "        <Message>The AWS Access Key Id you provided does not exist in our records.</Message>\n" +
+            "    </Error>\n" +
+            "    <RequestId>c23956a1-a55f-4b30-8acc-be803e0b5ab6</RequestId>\n" +
+            "</ItemLookupErrorResponse>";
 
     @Before
     public void setUp() {
@@ -241,8 +296,13 @@ public class AmazonQueryServiceTests {
         assertThat(actual, sameBeanAs(expect).ignoring("description"));
     }
 
-    @Test(expected = IsbnIllegalException.class)
+    @Rule
+    public ExpectedException expected = ExpectedException.none();
+
+    @Test
     public void shouldThrowNotFoundBookExceptionWhenQueryFoundNothing() throws Exception {
+        expected.expect(IsbnIllegalException.class);
+
         mockServer.expect(method(HttpMethod.GET))
                 .andRespond(withSuccess(RESPONSE_WITH_ERRORS_XML.replaceAll("(\\w+=\\w+)(&)", "$1&amp;"),
                         new MediaType(MediaType.APPLICATION_XML, Charset.forName("utf-8"))));
@@ -252,13 +312,41 @@ public class AmazonQueryServiceTests {
         mockServer.verify();
     }
 
-    @Test(expected = AccessForbitException.class)
+    @Test
     public void shouldThrowAccessForbitExceptionWhenAWSReturnForbidden() throws Exception {
+        String errorMsg = "Error{" +
+                "code='InvalidClientTokenId'" +
+                ", message='The AWS Access Key Id you provided does not exist in our records.'" +
+                '}';
+        expected.expect(AmazonServiceException.class);
+        expected.expectMessage(errorMsg);
+
         mockServer.expect(method(HttpMethod.GET))
-                .andRespond(withStatus(HttpStatus.FORBIDDEN));
+                .andRespond(withStatus(HttpStatus.FORBIDDEN)
+                        .body(FORBIDDEN_RESPONSE)
+                        .contentType(new MediaType(MediaType.APPLICATION_XML, Charset.forName("utf-8"))));
 
         amazonQueryService.queryByISBN("9787302423287");
 
         mockServer.verify();
+
+        fail("Not throw AmazonServiceException when access forbidden.");
+    }
+
+    @Test
+    public void shouldThrowBookNotFoundExceptionWhenAWSNotFoundBook() throws Exception {
+
+        expected.expect(BookNotFoundException.class);
+
+        mockServer.expect(method(HttpMethod.GET))
+                .andRespond(withSuccess(NO_RESULT_XML.replaceAll("(\\w+=\\w+)(&)", "$1&amp;"),
+                        new MediaType(MediaType.APPLICATION_XML, Charset.forName("utf-8"))));
+
+        amazonQueryService.queryByISBN("9787302423287");
+
+        mockServer.verify();
+
+        fail("Not throw BookNotFoundException when AWS not found any books.");
+
     }
 }

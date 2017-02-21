@@ -22,4 +22,16 @@ public class Error {
     public String getMessage() {
         return message;
     }
+
+    public boolean isInvalidIsbn() {
+        return code.equalsIgnoreCase("AWS.InvalidParameterValue");
+    }
+
+    @Override
+    public String toString() {
+        return "Error{" +
+                "code='" + code + '\'' +
+                ", message='" + message + '\'' +
+                '}';
+    }
 }
